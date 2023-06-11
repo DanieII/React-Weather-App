@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
 * {
     margin: 0;
     padding: 0;
@@ -8,11 +10,84 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: darkslateblue;
+    font-family: "Roboto", sans-serif;
+    background-color: antiquewhite;
 }
 
 .App {
-    width: 100%;
-    max-width: 1600px;
-    border: 1px solid white;
+    background-color: rgba(1, 1, 1, 0.1);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    width: 300px;
+    max-width: 300px;
+}
+
+#search-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#search-box input {
+    width: 90%;
+    border: none;
+    outline: none;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0);
+    color: gray;
+    font-size: 18px;
+}
+
+#search-icon {
+    margin-right: 10px;
+    color: gray;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+#content {
+    height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: hidden;
+    transition: height 0.2s ease-in;
+}
+
+.active {
+    margin-top: 10px;
+    height: 30vh !important;
+    max-height: 350px;
+}
+
+.gif {
+    background-color: transparent;
+    display: block;
+    height: auto;
+    width: 45%;
+    margin-bottom: 5%;
+}
+
+#information {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#information * {
+    color: gray;
+}
+
+.error {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: gray;
+    font-size: 20px;
+}
+
+.error::first-letter {
+    text-transform: uppercase;
 }

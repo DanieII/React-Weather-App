@@ -45,7 +45,7 @@ body {
     cursor: pointer;
 }
 
-#content {
+#information {
     height: 0;
     display: flex;
     flex-direction: column;
@@ -65,17 +65,22 @@ body {
     display: block;
     height: auto;
     width: 45%;
-    margin-bottom: 5%;
 }
 
 #information {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#current-weather {
     display: flex;
     text-align: center;
     flex-direction: column;
     gap: 10px;
 }
 
-#information * {
+#current-weather * {
     color: gray;
 }
 

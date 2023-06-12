@@ -1,6 +1,6 @@
 import "./App.css";
 import Search from "./components/search";
-import Content from "./components/content";
+import Information from "./components/information";
 import { useEffect, useState } from "react";
 
 function App() {
@@ -25,13 +25,24 @@ function App() {
     }
   }
 
+  const getCurrentWeather = async (lat, lon) => {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`);
+    const data = await response.json();
+    return { city: city, weather: data["weather"][0]["main"], temp: data["main"]["temp"], feels_like: data["main"]["feels_like"] };
+  }
+
+  const getWeatherForecast = async (lat, lon) => {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`)
+    const data = await response.json();
+    return data;
+  }
+
   const getWeatherData = async () => {
     const result = await getCoordinatesFromCityName();
     if (result) {
       const [lat, lon] = result;
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`);
-      const data = await response.json();;
-      return { city: city, weather: data["weather"][0]["main"], temp: data["main"]["temp"], feels_like: data["main"]["feels_like"] };
+      const data = { currentWeather: await getCurrentWeather(lat, lon), forecastWeather: await getWeatherForecast(lat, lon) };
+      return data;
     }
   }
 
@@ -53,7 +64,7 @@ function App() {
     <div className="App">
       {errorMessage && <div className="error"> {errorMessage} </div>}
       <Search onSearch={onSearch} />
-      <Content weatherData={weatherData} />
+      <Information weatherData={weatherData} />
     </div>
   );
 }

@@ -9,6 +9,7 @@ const weatherImages = [
     { image: clouds, name: "clouds" },
     { image: sun, name: "sun" },
     { image: rain, name: "rain" },
+    { image: rain, name: "storm" },
     { image: wind, name: "wind" }
 ];
 
@@ -27,31 +28,96 @@ const Information = ({ weatherData }) => {
         return imageObj;
     }
 
-    const getForecastDays = (weatherInformation) => {
-        let dates = new Set();
-        for (const current in weatherInformation) {
-            const information = weatherInformation[current];
-            const date = information.dt_txt;
-            dates.add(date.match(datePattern)[0])
+    const getImageByWeather = (weather) => {
+        const imageObj = findImageByWeather(weather);
+        let image;
+        if (!imageObj) {
+            image = findImageByWeather(BACKUP_WEATHER).image;
+        } else {
+            image = imageObj.image;
         }
-        const days = Array.from(dates).map((day) => new Date(day).toDateString().split(' ')[0]);
-        return days;
+        return image;
+    }
+
+    const getForecastDay = (currentWeatherInformation) => {
+        const date = currentWeatherInformation.dt_txt;
+        const day = new Date(date).toDateString().split(" ")[0];
+        return day;
     }
 
 
+    const getDayAverageTemperature = (allTemperatures) => {
+        let sum = 0;
+        for (const temperature of allTemperatures) {
+            sum += Number(temperature);
+        }
+        return (sum / allTemperatures.length).toFixed(1);
+    }
+
+    const getDayMostRepeatedWeather = (allWeather) => {
+        let trackWeather = {};
+        for (const weather of allWeather) {
+            if (!(weather in trackWeather)) {
+                trackWeather[weather] = 0
+            }
+            trackWeather[weather] += 1
+        }
+        let mostRepeated;
+        for (const weather in trackWeather) {
+            if (!mostRepeated) {
+                mostRepeated = weather;
+            } else {
+                if (trackWeather[mostRepeated] < trackWeather[weather]) {
+                    mostRepeated = weather;
+                }
+            }
+        }
+        return mostRepeated;
+    }
+
+    const getForecastDaysWeather = (weatherInformation) => {
+        let days = new Set();
+        let daysWeather = {};
+        for (const current in weatherInformation) {
+            const information = weatherInformation[current];
+            const day = getForecastDay(information);
+            const temp = kelvinToCelsius(information.main.temp);
+            const weather = information.weather["0"].main;
+            days.add(day);
+            if (!(day in daysWeather)) {
+                daysWeather[day] = { temperature: [], weather: [], image: null };
+            }
+            daysWeather[day].temperature.push(temp);
+            daysWeather[day].weather.push(weather);
+        }
+        for (const day in daysWeather) {
+            const information = daysWeather[day];
+            information.temperature = getDayAverageTemperature(information.temperature);
+            information.weather = getDayMostRepeatedWeather(information.weather);
+            information.image = getImageByWeather(information.weather);
+        }
+        return daysWeather;
+    }
+
+
+    let forecast;
     let currentImage;
     if (informationRef.current) {
         if (weatherData) {
-            getForecastDays(weatherData.forecastWeather.list);
-            const currentImageObj = findImageByWeather(weatherData.currentWeather.weather);
-            if (!currentImageObj) {
-                currentImage = findImageByWeather(BACKUP_WEATHER).image;
-            } else {
-                currentImage = currentImageObj.image;
-            }
+            forecast = getForecastDaysWeather(weatherData.forecastWeather.list);
+            currentImage = getImageByWeather(weatherData.currentWeather.weather);
+            informationRef.current.classList.remove("active-after-animation");
             informationRef.current.classList.add("active");
+            setTimeout(() => {
+                informationRef.current.classList.add("active-after-animation");
+            }, 250);
+
         } else {
-            informationRef.current.classList.remove("active");
+            const fromInvalidToValid = informationRef.current.classList.contains("active") ? false : true;
+            setTimeout(() => {
+                informationRef.current.classList.remove("active");
+                informationRef.current.classList.remove("active-after-animation");
+            }, fromInvalidToValid ? 150 : 250);
         }
     }
 
@@ -64,9 +130,18 @@ const Information = ({ weatherData }) => {
                         <h1>{kelvinToCelsius(weatherData.currentWeather.temp)}&deg;</h1>
                         <p><strong>{weatherData.currentWeather.weather}</strong></p>
                     </div>
-                    <div id="forecast-weather">
-
-                    </div>
+                    <ul id="forecast-weather">
+                        {Object.keys(forecast).map((day) => {
+                            const currentDay = forecast[day];
+                            return (
+                                <li>
+                                    <p key={currentDay.day}>{day}</p>
+                                    <img key={currentDay.image} src={currentDay.image} className="gif" />
+                                    <p key={currentDay.temperature}>{currentDay.temperature}&deg;</p>
+                                </li>
+                            );
+                        })}
+                    </ul>
                 </>
             ) : <></>}
         </div>

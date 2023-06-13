@@ -1,7 +1,7 @@
 import "./App.css";
 import Search from "./components/search";
 import Information from "./components/information";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 function App() {
   const [city, changeCity] = useState();
@@ -9,6 +9,7 @@ function App() {
   const [errorMessage, changeErrorMessage] = useState();
 
   const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+  const errorRef = useRef();
 
   const onSearch = (currentCity) => {
     changeCity(currentCity);
@@ -60,9 +61,18 @@ function App() {
     }
   }, [city])
 
+  useEffect(() => {
+    setTimeout(() => {
+      errorRef.current?.classList.add("error-hidden");
+    }, 2000);
+    return () => {
+      errorRef.current?.classList.remove("error-hidden");
+    }
+  }, [errorMessage])
+
   return (
     <div className="App">
-      {errorMessage && <div className="error"> {errorMessage} </div>}
+      {errorMessage && <div className="error" ref={errorRef}> {errorMessage}</div>}
       <Search onSearch={onSearch} />
       <Information weatherData={weatherData} />
     </div>

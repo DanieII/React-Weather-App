@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import clouds from '../assets/clouds.gif';
 import sun from '../assets/sun.gif';
 import rain from '../assets/rain.gif';
@@ -14,9 +14,10 @@ const weatherImages = [
 ];
 
 const BACKUP_WEATHER = "sun"
-const datePattern = /\d+-\d+-\d+/;
 
 const Information = ({ weatherData }) => {
+    const [forecast, setForecast] = useState([]);
+    const [currentImage, setCurrentImage] = useState();
     const informationRef = useRef();
 
     const kelvinToCelsius = (kelvin) => {
@@ -24,7 +25,7 @@ const Information = ({ weatherData }) => {
     }
 
     const findImageByWeather = (weather) => {
-        const imageObj = weatherImages.find((weatherImage) => weather.toLowerCase().includes(weatherImage.name.toLowerCase()));
+        const imageObj = weatherImages.find((weatherImage) => weather.toLowerCase().includes(weatherImage.name));
         return imageObj;
     }
 
@@ -77,41 +78,43 @@ const Information = ({ weatherData }) => {
 
     const getForecastDaysWeather = (weatherInformation) => {
         let days = new Set();
-        let daysWeather = {};
+        let daysWeather = [];
+
         for (const current in weatherInformation) {
             const information = weatherInformation[current];
             const day = getForecastDay(information);
             const temp = kelvinToCelsius(information.main.temp);
             const weather = information.weather["0"].main;
             days.add(day);
-            if (!(day in daysWeather)) {
-                daysWeather[day] = { temperature: [], weather: [], image: null };
+            const addedDays = daysWeather.map(dayWeather => dayWeather.day);
+
+            if (!addedDays.includes(day)) {
+                const dayWeather = { day: day, temperature: [], weather: [], image: null };
+                daysWeather.push(dayWeather);
             }
-            daysWeather[day].temperature.push(temp);
-            daysWeather[day].weather.push(weather);
+
+            const currentDay = daysWeather.filter(dayWeather => dayWeather.day === day)[0];
+            currentDay.temperature.push(temp);
+            currentDay.weather.push(weather);
         }
-        for (const day in daysWeather) {
-            const information = daysWeather[day];
-            information.temperature = getDayAverageTemperature(information.temperature);
-            information.weather = getDayMostRepeatedWeather(information.weather);
-            information.image = getImageByWeather(information.weather);
+        for (const day of daysWeather) {
+            day.temperature = getDayAverageTemperature(day.temperature);
+            day.weather = getDayMostRepeatedWeather(day.weather);
+            day.image = getImageByWeather(day.weather);
         }
-        return daysWeather;
+        const nextFiveDays = daysWeather.slice(1);
+        return nextFiveDays;
     }
 
-
-    let forecast;
-    let currentImage;
-    if (informationRef.current) {
+    useEffect(() => {
         if (weatherData) {
-            forecast = getForecastDaysWeather(weatherData.forecastWeather.list);
-            currentImage = getImageByWeather(weatherData.currentWeather.weather);
+            setForecast(getForecastDaysWeather(weatherData.forecastWeather.list));
+            setCurrentImage(getImageByWeather(weatherData.currentWeather.weather));
             informationRef.current.classList.remove("active-after-animation");
             informationRef.current.classList.add("active");
             setTimeout(() => {
                 informationRef.current.classList.add("active-after-animation");
             }, 250);
-
         } else {
             const fromInvalidToValid = informationRef.current.classList.contains("active") ? false : true;
             setTimeout(() => {
@@ -119,7 +122,7 @@ const Information = ({ weatherData }) => {
                 informationRef.current.classList.remove("active-after-animation");
             }, fromInvalidToValid ? 150 : 250);
         }
-    }
+    }, [weatherData])
 
     return (
         <div id="information" ref={informationRef}>
@@ -131,13 +134,12 @@ const Information = ({ weatherData }) => {
                         <p><strong>{weatherData.currentWeather.weather}</strong></p>
                     </div>
                     <ul id="forecast-weather">
-                        {Object.keys(forecast).map((day) => {
-                            const currentDay = forecast[day];
+                        {forecast.map((day, index) => {
                             return (
-                                <li>
-                                    <p key={currentDay.day}>{day}</p>
-                                    <img key={currentDay.image} src={currentDay.image} className="gif" />
-                                    <p key={currentDay.temperature}>{currentDay.temperature}&deg;</p>
+                                <li key={index}>
+                                    <p key={day.day}>{day.day}</p>
+                                    <img key={day.image} src={day.image} className="gif" />
+                                    <p key={day.temperature}>{day.temperature}&deg;</p>
                                 </li>
                             );
                         })}

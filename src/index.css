@@ -1,0 +1,150 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+.theme-icon {
+  @apply absolute top-10 right-10 text-neutral-500 hover:text-gray-700 cursor-pointer text-xl;
+}
+
+.display-none {
+  @apply hidden;
+}
+
+/* body { */
+/*     display: flex; */
+/*     justify-content: center; */
+/*     align-items: center; */
+/*     height: 100vh; */
+/*     font-family: "Roboto", sans-serif; */
+/*     background-color: antiquewhite; */
+/* } */
+
+/* .App { */
+/*     background-color: rgba(1, 1, 1, 0.1); */
+/*     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3); */
+/*     border-radius: 5px; */
+/*     width: 300px; */
+/*     max-width: 300px; */
+/* } */
+
+/* #search-box { */
+/*     display: flex; */
+/*     align-items: center; */
+/*     justify-content: space-between; */
+/* } */
+
+/* #search-box input { */
+/*     width: 90%; */
+/*     border: none; */
+/*     outline: none; */
+/*     padding: 20px; */
+/*     background-color: rgba(0, 0, 0, 0); */
+/*     color: neutral; */
+/*     font-size: 18px; */
+/* } */
+
+/* #search-icon { */
+/*     margin-right: 10px; */
+/*     color: neutral; */
+/*     font-size: 17px; */
+/*     cursor: pointer; */
+/* } */
+
+/* #information { */
+/*     height: 0; */
+/*     display: flex; */
+/*     flex-direction: column; */
+/*     align-items: center; */
+/*     transition: height 0.2s ease-in; */
+/* } */
+
+/* #information * { */
+/*     opacity: 0; */
+/* } */
+
+/* .active { */
+/*     height: 30vh !important; */
+/* } */
+
+/* .active-after-animation { */
+/*     min-height: 350px; */
+/* } */
+
+/* .active-after-animation * { */
+/*     opacity: 1 !important; */
+/*     transition: opacity 0.2s ease-in; */
+/* } */
+
+/* .gif { */
+/*     display: block; */
+/*     height: auto; */
+/*     width: 40%; */
+/* } */
+
+/* #information { */
+/*     display: flex; */
+/*     flex-direction: column; */
+/*     align-items: center; */
+/*     justify-content: space-evenly; */
+/* } */
+
+/* #current-weather { */
+/*     display: flex; */
+/*     text-align: center; */
+/*     flex-direction: column; */
+/*     gap: 10px; */
+/* } */
+
+/* #current-weather * { */
+/*     color: neutral; */
+/* } */
+
+/* #forecast-weather * { */
+/*     color: neutral; */
+/*     font-weight: bold; */
+/* } */
+
+/* #forecast-weather { */
+/*     display: flex; */
+/*     flex-wrap: wrap; */
+/*     gap: 5px; */
+/* } */
+
+/* #forecast-weather li { */
+/*     display: flex; */
+/*     flex-direction: column; */
+/*     align-items: center; */
+/*     text-align: center; */
+/*     justify-content: space-between; */
+/* } */
+
+/* #forecast-weather .gif { */
+/*     width: 50px; */
+/* } */
+
+/* .error { */
+/*     position: fixed; */
+/*     top: 30%; */
+/*     left: 50%; */
+/*     transform: translate(-50%, -50%); */
+/*     color: neutral; */
+/*     font-size: 20px; */
+/* } */
+
+/* .error::first-letter { */
+/*     text-transform: uppercase; */
+/* } */
+
+/* .error-hidden { */
+/*     user-select: none; */
+/*     opacity: 0 !important; */
+/*     transition: opacity 0.2s ease-in; */
+/* } */

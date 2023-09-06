@@ -26,19 +26,19 @@ const Search = ({ onSearch }) => {
 
   return (
     <>
-      <div>
+      <div className="flex items-center justify-center mb-10">
         <input
           type="text"
           ref={searchRef}
           placeholder="Search..."
           onChange={handleChange}
-          className="p-1 dark:bg-neutral-500 rounded"
+          className="p-1 dark:bg-gray-700 dark:text-white rounded-md"
         ></input>
         <FontAwesomeIcon
           icon={faMagnifyingGlass}
           id="search-icon"
           onClick={startSearch}
-          className="ml-5 cursor-pointer text-neutral-500 hover:text-gray-700"
+          className="ml-5 cursor-pointer text-gray-500 hover:text-gray-700"
         />
       </div>
     </>

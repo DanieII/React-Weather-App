@@ -25,7 +25,6 @@ function App() {
 
     if (data.length > 0) {
       const [lat, lon] = [data[0]["lat"], data[0]["lon"]];
-
       return [lat, lon];
     } else {
       setErrorMessage(`${city} is not a valid city`);
@@ -51,7 +50,6 @@ function App() {
       `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`,
     );
     const data = await response.json();
-
     return data;
   };
 
@@ -64,7 +62,6 @@ function App() {
         currentWeather: await getCurrentWeather(lat, lon),
         forecastWeather: await getWeatherForecast(lat, lon),
       };
-
       return data;
     }
   };
@@ -84,28 +81,28 @@ function App() {
   }, [city]);
 
   useEffect(() => {
-    setTimeout(() => {
-      errorRef.current?.classList.add("error-hidden");
+    errorRef.current?.classList.remove("hidden");
+    const errorTimeout = setTimeout(() => {
+      errorRef.current?.classList.add("hidden");
     }, 2000);
 
     return () => {
-      errorRef.current?.classList.remove("error-hidden");
+      clearTimeout(errorTimeout);
     };
   }, [errorMessage]);
 
   return (
-    <div className="App h-screen flex justify-center bg-antiquewhite dark:bg-black-bg">
+    <div className="App h-screen flex flex-col items-center justify-center bg-antiquewhite dark:bg-black-bg">
       <ThemeButton />
-      <i class="fa-solid fa-sun theme-icon"></i>
       {errorMessage ? (
-        <div className="error" ref={errorRef}>
+        <div className="dark:text-white m-10" ref={errorRef}>
           {errorMessage}
         </div>
       ) : (
         <></>
       )}
 
-      <div className="self-center">
+      <div className="md:w-1/3 sm:w-full">
         <Search onSearch={onSearch} />
         <Weather weatherData={weatherData} />
       </div>

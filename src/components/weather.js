@@ -17,12 +17,13 @@ const BACKUP_WEATHER = "sun";
 const Weather = ({ weatherData }) => {
   const [forecast, setForecast] = useState([]);
   const [currentImage, setCurrentImage] = useState();
-  const informationRef = useRef();
+  const weatherRef = useRef();
+  const weatherTransitionDuration = 500;
+  let isActive = false;
 
   const kelvinToCelsius = (kelvin) => {
     return (kelvin - 273.15).toFixed(1);
   };
-
   const findImageByWeather = (weather) => {
     const imageObj = weatherImages.find((weatherImage) =>
       weather.toLowerCase().includes(weatherImage.name),
@@ -115,30 +116,60 @@ const Weather = ({ weatherData }) => {
     return nextFiveDays;
   };
 
+  async function startAnimation() {
+    weatherRef.current.classList.add("collapsed");
+    await new Promise((resolve) => {
+      setTimeout(
+        () => {
+          weatherRef.current.classList.remove("collapsed");
+          resolve();
+        },
+        isActive ? weatherTransitionDuration : 0,
+      );
+    });
+  }
+
   useEffect(() => {
     if (weatherData) {
-      setForecast(getForecastDaysWeather(weatherData.forecastWeather.list));
-      setCurrentImage(getImageByWeather(weatherData.currentWeather.weather));
+      isActive = true;
+      const setWeather = async () => {
+        await startAnimation();
+        setForecast(getForecastDaysWeather(weatherData.forecastWeather.list));
+        setCurrentImage(getImageByWeather(weatherData.currentWeather.weather));
+      };
+      setWeather();
     } else {
+      isActive = false;
     }
   }, [weatherData]);
 
   return (
-    <div id="information" ref={informationRef}>
+    <div
+      ref={weatherRef}
+      className="flex flex-col content-center items-center overflow-hidden weather collapsed transition-all ease-linear duration-{weatherTransitionDuration}"
+    >
       {weatherData ? (
         <>
-          <img src={currentImage} className="gif"></img>
-          <div id="current-weather">
-            <h1>{kelvinToCelsius(weatherData.currentWeather.temp)}&deg;</h1>
-            <p>{weatherData.currentWeather.weather}</p>
+          <img src={currentImage} className="w-2/3"></img>
+          <div className="text-center m-5">
+            <h1 className="dark:text-white">
+              {kelvinToCelsius(weatherData.currentWeather.temp)}&deg;
+            </h1>
+            <p className="dark:text-white">
+              {weatherData.currentWeather.weather}
+            </p>
           </div>
-          <ul id="forecast-weather">
+          <ul className="flex gap-5 gap-2 text-center">
             {forecast.map((day, index) => {
               return (
-                <li key={index}>
-                  <p key={day.day}>{day.day}</p>
-                  <img key={day.image} src={day.image} className="gif" />
-                  <p key={day.temperature}>{day.temperature}&deg;</p>
+                <li key={index} className="flex flex-col self-baseline ">
+                  <p key={day.day} className="dark:text-white">
+                    {day.day}
+                  </p>
+                  <img key={day.image} src={day.image} className="w-10 h-10 " />
+                  <p key={day.temperature} className="dark:text-white">
+                    {day.temperature}&deg;
+                  </p>
                 </li>
               );
             })}

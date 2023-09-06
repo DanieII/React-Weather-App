@@ -7,6 +7,9 @@ module.exports = {
       colors: {
         "black-bg": "#080a11",
       },
+      transitionProperty: {
+        height: "height",
+      },
     },
   },
   plugins: [],
